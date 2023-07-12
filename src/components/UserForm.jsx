@@ -1,12 +1,9 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { UserContext } from "../context/UserContext";
 
-export const UserForm = ({
-  handlerAddUser,
-  initialUserForm,
-  userSelected,
-  handlerCloseForm,
-}) => {
+export const UserForm = ({ userSelected, handlerCloseForm }) => {
+  const { handlerAddUser, initialUserForm } = useContext(UserContext);
   const [userForm, setUserForm] = useState(initialUserForm);
 
   const { id, userName, password, email } = userForm;
@@ -36,6 +33,14 @@ export const UserForm = ({
       );
       return;
     }
+    if (!email.includes("@")) {
+      Swal.fire(
+        "Something went wrong with the email",
+        "The email has an error!",
+        "error"
+      );
+      return;
+    }
     handlerAddUser(userForm);
     setUserForm(initialUserForm);
   };
@@ -45,7 +50,7 @@ export const UserForm = ({
   };
   return (
     <>
-      <form className="form-group" onSubmit={onSubmit}>
+      <form onSubmit={onSubmit}>
         <input
           type="text"
           className="form-control my-3 w-75"
@@ -76,13 +81,15 @@ export const UserForm = ({
         <button className="btn btn-primary" type="submit">
           {id > 0 ? "Confirm" : "Create"}
         </button>
-        <button
-          className="btn btn-secondary mx-2"
-          type="button"
-          onClick={() => onCloseForm()}
-        >
-          Close
-        </button>
+        {!handlerCloseForm || (
+          <button
+            className="btn btn-secondary mx-2"
+            type="button"
+            onClick={() => onCloseForm()}
+          >
+            Close
+          </button>
+        )}
       </form>
     </>
   );
