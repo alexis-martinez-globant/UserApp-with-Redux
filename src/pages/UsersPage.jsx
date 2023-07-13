@@ -1,11 +1,16 @@
 import { UsersList } from "../components/UsersList";
 import { useUsers } from "../hooks/useUsers";
 import { UserModalForm } from "../components/UserModalForm";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
 
 export const UsersPage = () => {
-  const { users, visibleForm, handlerOpenForm } = useContext(UserContext);
+  const { users, visibleForm, handlerOpenForm, getUsers } =
+    useContext(UserContext);
+
+  useEffect(() => {
+    getUsers();
+  }, []);
 
   return (
     <>
@@ -23,7 +28,7 @@ export const UsersPage = () => {
             )}
             {users.length === 0 ? (
               <div className="alert alert-warning p-3 text-center">
-                No hay usuarios
+                There are not users
               </div>
             ) : (
               <UsersList />

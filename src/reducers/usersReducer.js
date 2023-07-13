@@ -5,7 +5,7 @@ export const userReducer = (state = [], action) => {
         ...state,
         {
           ...action.payload,
-          id: new Date().getTime(),
+          // id: new Date().getTime(),
         },
       ];
     case "updateUser":
@@ -20,6 +20,8 @@ export const userReducer = (state = [], action) => {
       });
     case "removeUser":
       return state.filter((user) => user.id !== action.payload);
+    case "loadingUsers":
+      return action.payload;
     default:
       return state;
   }
