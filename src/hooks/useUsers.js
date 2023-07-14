@@ -11,10 +11,16 @@ const initialUserForm = {
   password: "",
   email: "",
 };
+const initialError = {
+  userName: "",
+  password: "",
+  email: "",
+};
 export const useUsers = () => {
   const [users, dispatch] = useReducer(userReducer, initialUsers);
   const [userSelected, setUserSelected] = useState(initialUserForm);
   const [visibleForm, setVisibleForm] = useState(false);
+  const [errors, setErrors] = useState(initialError);
   const navigate = useNavigate();
 
   const getUsers = async () => {
@@ -27,25 +33,46 @@ export const useUsers = () => {
 
   const handlerAddUser = async (user) => {
     let response;
-    if (user.id === 0) {
-      response = await save(user);
-    } else {
-      response = await update(user);
-    }
-    dispatch({
-      type: user.id === 0 ? "addUser" : "updateUser",
-      payload: response.data,
-    });
+    try {
+      if (user.id === 0) {
+        response = await save(user);
+      } else {
+        response = await update(user);
+      }
+      dispatch({
+        type: user.id === 0 ? "addUser" : "updateUser",
+        payload: response.data,
+      });
 
-    Swal.fire(
-      user.id === 0 ? "Created" : "Updated",
-      user.id === 0
-        ? "The user was created successfully"
-        : "The user was actualized successfully",
-      "success"
-    );
-    handlerCloseForm();
-    navigate("/users");
+      Swal.fire(
+        user.id === 0 ? "Created" : "Updated",
+        user.id === 0
+          ? "The user was created successfully"
+          : "The user was actualized successfully",
+        "success"
+      );
+      handlerCloseForm();
+      navigate("/users");
+    } catch (error) {
+      // console.error(error);
+      if (error.response && error.response.status == 400) {
+        setErrors(error.response.data);
+      } else if (
+        error.response &&
+        error.response.status == 500 &&
+        error.response.data?.message?.includes("constraint")
+      ) {
+        // setErrors({ userName: "That name or email is already in use" });
+        if (error.response.data?.message?.includes("UK_userName")) {
+          setErrors({ userName: "That name is already in use" });
+        }
+        if (error.response.data?.message?.includes("UK_email")) {
+          setErrors({ email: "That email is already in use" });
+        }
+      } else {
+        throw error;
+      }
+    }
   };
   const handlerUserSelectedForm = (user) => {
     setVisibleForm(true);
@@ -79,13 +106,14 @@ export const useUsers = () => {
   const handlerCloseForm = () => {
     setVisibleForm(false);
     setUserSelected(initialUserForm);
+    setErrors({});
   };
   return {
     users,
     userSelected,
     initialUserForm,
     visibleForm,
-
+    errors,
     handlerAddUser,
     handlerUserSelectedForm,
     handlerRemoveUser,

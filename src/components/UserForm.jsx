@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import { UserContext } from "../context/UserContext";
 
 export const UserForm = ({ userSelected, handlerCloseForm }) => {
-  const { handlerAddUser, initialUserForm } = useContext(UserContext);
+  const { handlerAddUser, initialUserForm, errors } = useContext(UserContext);
   const [userForm, setUserForm] = useState(initialUserForm);
 
   const { id, userName, password, email } = userForm;
@@ -25,24 +25,25 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
 
   const onSubmit = (event) => {
     event.preventDefault();
-    if (!userName || (!password && id === 0) || !email) {
-      Swal.fire(
-        "Something went wrong!",
-        "All fields must to be filled",
-        "error"
-      );
-      return;
-    }
-    if (!email.includes("@")) {
-      Swal.fire(
-        "Something went wrong with the email",
-        "The email has an error!",
-        "error"
-      );
-      return;
-    }
+    // validation is in the hook useUsers
+    // if (!userName || (!password && id === 0) || !email) {
+    //   Swal.fire(
+    //     "Something went wrong!",
+    //     "All fields must to be filled",
+    //     "error"
+    //   );
+    //   return;
+    // }
+    // if (!email.includes("@")) {
+    //   Swal.fire(
+    //     "Something went wrong with the email",
+    //     "The email has an error!",
+    //     "error"
+    //   );
+    //   return;
+    // }
     handlerAddUser(userForm);
-    setUserForm(initialUserForm);
+    // setUserForm(initialUserForm);
   };
   const onCloseForm = () => {
     handlerCloseForm();
@@ -59,6 +60,7 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
           value={userName}
           onChange={onInputChange}
         />
+        <p className="text-danger">{errors?.userName}</p>
         {id > 0 || (
           <input
             type="password"
@@ -69,6 +71,7 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
             onChange={onInputChange}
           />
         )}
+        <p className="text-danger">{errors?.password}</p>
         <input
           type="text"
           className="form-control my-3 w-75"
@@ -77,6 +80,7 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
           value={email}
           onChange={onInputChange}
         />
+        <p className="text-danger">{errors?.email}</p>
         <input type="hidden" name="id" value={id} />
         <button className="btn btn-primary" type="submit">
           {id > 0 ? "Confirm" : "Create"}
