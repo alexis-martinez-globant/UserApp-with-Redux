@@ -2,20 +2,20 @@ import { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 
-export const UserRaw = ({ id, userName, email }) => {
+export const UserRaw = ({ id, username, email }) => {
   const { handlerRemoveUser, handlerUserSelectedForm } =
     useContext(UserContext);
 
   return (
     <tr>
       <td>{id}</td>
-      <td>{userName}</td>
+      <td>{username}</td>
       <td>{email}</td>
       <td>
         <button
           type="button"
           className="btn btn-sm btn-warning"
-          onClick={() => handlerUserSelectedForm({ id, userName, email })}
+          onClick={() => handlerUserSelectedForm({ id, username, email })}
         >
           Update
         </button>

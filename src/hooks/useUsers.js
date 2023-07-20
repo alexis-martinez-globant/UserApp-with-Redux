@@ -7,12 +7,12 @@ import { findAll, remove, save, update } from "../services/userService";
 const initialUsers = [];
 const initialUserForm = {
   id: 0,
-  userName: "",
+  username: "",
   password: "",
   email: "",
 };
 const initialError = {
-  userName: "",
+  username: "",
   password: "",
   email: "",
 };
@@ -62,9 +62,9 @@ export const useUsers = () => {
         error.response.status == 500 &&
         error.response.data?.message?.includes("constraint")
       ) {
-        // setErrors({ userName: "That name or email is already in use" });
-        if (error.response.data?.message?.includes("UK_userName")) {
-          setErrors({ userName: "That name is already in use" });
+        // setErrors({ username: "That name or email is already in use" });
+        if (error.response.data?.message?.includes("UK_username")) {
+          setErrors({ username: "That name is already in use" });
         }
         if (error.response.data?.message?.includes("UK_email")) {
           setErrors({ email: "That email is already in use" });

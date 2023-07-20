@@ -10,7 +10,7 @@ export const UsersList = () => {
         <thead>
           <tr className="">
             <th>#</th>
-            <th>userName</th>
+            <th>username</th>
             <th>eMail</th>
             <th>Update</th>
             <th>Go to</th>
@@ -18,8 +18,8 @@ export const UsersList = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map(({ id, userName, email }) => (
-            <UserRaw id={id} userName={userName} email={email} key={id} />
+          {users.map(({ id, username, email }) => (
+            <UserRaw id={id} username={username} email={email} key={id} />
           ))}
         </tbody>
       </table>

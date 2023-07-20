@@ -5,11 +5,11 @@ import { AuthContext } from "../context/AuthContext";
 export const LoginPage = () => {
   const { handlerLogin } = useContext(AuthContext);
   const initialLoginForm = {
-    userName: "",
+    username: "",
     password: "",
   };
   const [loginForm, setLoginForm] = useState(initialLoginForm);
-  const { userName, password } = loginForm;
+  const { username, password } = loginForm;
 
   const onInputChange = ({ target }) => {
     const { name, value } = target;
@@ -21,11 +21,11 @@ export const LoginPage = () => {
 
   const onSubmit = (event) => {
     event.preventDefault();
-    if (!userName || !password) {
+    if (!username || !password) {
       Swal.fire("Validation fail", "All input must be filled", "error");
       return;
     }
-    handlerLogin({ userName, password });
+    handlerLogin({ username, password });
 
     setLoginForm(initialLoginForm);
   };
@@ -42,9 +42,9 @@ export const LoginPage = () => {
                 <input
                   type="text"
                   className="form-control my-3 w-75"
-                  name="userName"
+                  name="username"
                   placeholder="username"
-                  value={userName}
+                  value={username}
                   onChange={onInputChange}
                 />
                 <input

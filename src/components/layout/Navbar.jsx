@@ -30,7 +30,7 @@ export const Navbar = () => {
           >
             <span>Hi</span>
             <span className="nav-item nav-link text-primary mr-3">
-              {login.user?.userName}
+              {login.user?.username}
             </span>
             <button className="btn btn-outline-success" onClick={handlerLogout}>
               Logout

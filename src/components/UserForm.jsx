@@ -6,7 +6,7 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
   const { handlerAddUser, initialUserForm, errors } = useContext(UserContext);
   const [userForm, setUserForm] = useState(initialUserForm);
 
-  const { id, userName, password, email } = userForm;
+  const { id, username, password, email } = userForm;
 
   useEffect(() => {
     setUserForm({
@@ -26,7 +26,7 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
   const onSubmit = (event) => {
     event.preventDefault();
     // validation is in the hook useUsers
-    // if (!userName || (!password && id === 0) || !email) {
+    // if (!username || (!password && id === 0) || !email) {
     //   Swal.fire(
     //     "Something went wrong!",
     //     "All fields must to be filled",
@@ -56,11 +56,11 @@ export const UserForm = ({ userSelected, handlerCloseForm }) => {
           type="text"
           className="form-control my-3 w-75"
           placeholder="Username"
-          name="userName"
-          value={userName}
+          name="username"
+          value={username}
           onChange={onInputChange}
         />
-        <p className="text-danger">{errors?.userName}</p>
+        <p className="text-danger">{errors?.username}</p>
         {id > 0 || (
           <input
             type="password"

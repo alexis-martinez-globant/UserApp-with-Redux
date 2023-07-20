@@ -11,10 +11,10 @@ export const findAll = async () => {
   return null;
 };
 
-export const save = async ({ userName, email, password }) => {
+export const save = async ({ username, email, password }) => {
   try {
     return await axios.post(BASE_URL, {
-      userName,
+      username,
       email,
       password,
     });
@@ -24,10 +24,10 @@ export const save = async ({ userName, email, password }) => {
   }
 };
 
-export const update = async ({ id, userName, email }) => {
+export const update = async ({ id, username, email }) => {
   try {
     return await axios.put(`${BASE_URL}/${id}`, {
-      userName,
+      username,
       email,
       //   password: "useful",
     });
