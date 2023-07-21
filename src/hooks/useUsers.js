@@ -1,8 +1,9 @@
-import { useReducer, useState } from "react";
+import { useContext, useReducer, useState } from "react";
 import { userReducer } from "../reducers/usersReducer";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { findAll, remove, save, update } from "../services/userService";
+import { AuthContext } from "../auth/context/AuthContext";
 
 const initialUsers = [];
 const initialUserForm = {
@@ -22,6 +23,7 @@ export const useUsers = () => {
   const [visibleForm, setVisibleForm] = useState(false);
   const [errors, setErrors] = useState(initialError);
   const navigate = useNavigate();
+  const { login, handlerLogout } = useContext(AuthContext);
 
   const getUsers = async () => {
     const result = await findAll();
@@ -32,6 +34,8 @@ export const useUsers = () => {
   };
 
   const handlerAddUser = async (user) => {
+    if (!login.isAdmin) return;
+
     let response;
     try {
       if (user.id === 0) {
@@ -69,6 +73,8 @@ export const useUsers = () => {
         if (error.response.data?.message?.includes("UK_email")) {
           setErrors({ email: "That email is already in use" });
         }
+      } else if (error.response?.status == 401) {
+        handlerLogout();
       } else {
         throw error;
       }
@@ -88,14 +94,20 @@ export const useUsers = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        remove(id);
-        dispatch({
-          type: "removeUser",
-          payload: id,
-        });
-        Swal.fire("Deleted!", "The user has been deleted.", "success");
+        try {
+          await remove(id);
+          dispatch({
+            type: "removeUser",
+            payload: id,
+          });
+          Swal.fire("Deleted!", "The user has been deleted.", "success");
+        } catch (error) {
+          if (error.response?.status == 401) {
+            handlerLogout();
+          }
+        }
       }
     });
   };

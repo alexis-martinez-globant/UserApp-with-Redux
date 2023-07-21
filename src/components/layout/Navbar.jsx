@@ -17,11 +17,14 @@ export const Navbar = () => {
                   Users
                 </NavLink>
               </li>
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/users/register">
-                  Register
-                </NavLink>
-              </li>
+
+              {!login.isAdmin || (
+                <li className="nav-item">
+                  <NavLink className="nav-link" to="/users/register">
+                    Register
+                  </NavLink>
+                </li>
+              )}
             </ul>
           </div>
           <div

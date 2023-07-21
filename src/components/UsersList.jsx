@@ -1,9 +1,12 @@
 import { useContext } from "react";
 import { UserRaw } from "./UserRaw";
 import { UserContext } from "../context/UserContext";
+import { AuthContext } from "../auth/context/AuthContext";
 
 export const UsersList = () => {
   const { users } = useContext(UserContext);
+  const { login } = useContext(AuthContext);
+
   return (
     <>
       <table className="table table-hover table-striped">
@@ -12,9 +15,13 @@ export const UsersList = () => {
             <th>#</th>
             <th>username</th>
             <th>eMail</th>
-            <th>Update</th>
-            <th>Go to</th>
-            <th>Delete</th>
+            {!login.isAdmin || (
+              <>
+                <th>Update</th>
+                <th>Go to</th>
+                <th>Delete</th>
+              </>
+            )}
           </tr>
         </thead>
         <tbody>
