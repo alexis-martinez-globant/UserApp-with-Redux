@@ -1,37 +1,31 @@
-import { useContext, useReducer, useState } from "react";
-import { userReducer } from "../reducers/usersReducer";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { findAll, remove, save, update } from "../services/userService";
-import { AuthContext } from "../auth/context/AuthContext";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  initialUserForm,
+  addUser,
+  removeUser,
+  updateUser,
+  loadingError,
+  loadingUsers,
+  onUserSelectedForm,
+  onOpenForm,
+  onCloseForm,
+} from "../store/slices/users/usersSlice";
+import { useAuth } from "../auth/hooks/useAuth";
 
-const initialUsers = [];
-const initialUserForm = {
-  id: 0,
-  username: "",
-  password: "",
-  email: "",
-  admin: false,
-};
-const initialError = {
-  username: "",
-  password: "",
-  email: "",
-};
 export const useUsers = () => {
-  const [users, dispatch] = useReducer(userReducer, initialUsers);
-  const [userSelected, setUserSelected] = useState(initialUserForm);
-  const [visibleForm, setVisibleForm] = useState(false);
-  const [errors, setErrors] = useState(initialError);
+  const { users, userSelected, visibleForm, errors } = useSelector(
+    (state) => state.users
+  );
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { login, handlerLogout } = useContext(AuthContext);
+  const { login, handlerLogout } = useAuth();
 
   const getUsers = async () => {
     const result = await findAll();
-    dispatch({
-      type: "loadingUsers",
-      payload: result.data,
-    });
+    dispatch(loadingUsers(result.data));
   };
 
   const handlerAddUser = async (user) => {
@@ -41,13 +35,11 @@ export const useUsers = () => {
     try {
       if (user.id === 0) {
         response = await save(user);
+        dispatch(addUser(response.data));
       } else {
         response = await update(user);
+        dispatch(updateUser(response.data));
       }
-      dispatch({
-        type: user.id === 0 ? "addUser" : "updateUser",
-        payload: response.data,
-      });
 
       Swal.fire(
         user.id === 0 ? "Created" : "Updated",
@@ -59,20 +51,18 @@ export const useUsers = () => {
       handlerCloseForm();
       navigate("/users");
     } catch (error) {
-      // console.error(error);
       if (error.response && error.response.status == 400) {
-        setErrors(error.response.data);
+        dispatch(loadingError(error.response.data));
       } else if (
         error.response &&
         error.response.status == 500 &&
         error.response.data?.message?.includes("constraint")
       ) {
-        // setErrors({ username: "That name or email is already in use" });
         if (error.response.data?.message?.includes("UK_username")) {
-          setErrors({ username: "That name is already in use" });
+          dispatch(loadingError({ username: "That name is already in use" }));
         }
         if (error.response.data?.message?.includes("UK_email")) {
-          setErrors({ email: "That email is already in use" });
+          dispatch(loadingError({ email: "That email is already in use" }));
         }
       } else if (error.response?.status == 401) {
         handlerLogout();
@@ -80,10 +70,6 @@ export const useUsers = () => {
         throw error;
       }
     }
-  };
-  const handlerUserSelectedForm = (user) => {
-    setVisibleForm(true);
-    setUserSelected({ ...user });
   };
 
   const handlerRemoveUser = (id) => {
@@ -99,10 +85,7 @@ export const useUsers = () => {
       if (result.isConfirmed) {
         try {
           await remove(id);
-          dispatch({
-            type: "removeUser",
-            payload: id,
-          });
+          dispatch(removeUser(id));
           Swal.fire("Deleted!", "The user has been deleted.", "success");
         } catch (error) {
           if (error.response?.status == 401) {
@@ -112,15 +95,17 @@ export const useUsers = () => {
       }
     });
   };
-
+  const handlerUserSelectedForm = (user) => {
+    dispatch(onUserSelectedForm(user));
+  };
   const handlerOpenForm = () => {
-    setVisibleForm(true);
+    dispatch(onOpenForm());
   };
   const handlerCloseForm = () => {
-    setVisibleForm(false);
-    setUserSelected(initialUserForm);
-    setErrors({});
+    dispatch(onCloseForm());
+    dispatch(loadingError({}));
   };
+
   return {
     users,
     userSelected,
