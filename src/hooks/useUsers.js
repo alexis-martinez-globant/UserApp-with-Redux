@@ -11,6 +11,7 @@ const initialUserForm = {
   username: "",
   password: "",
   email: "",
+  admin: false,
 };
 const initialError = {
   username: "",
